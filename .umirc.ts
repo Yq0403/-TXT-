@@ -20,11 +20,6 @@ export default defineConfig({
       component: './Home',
     },
     {
-      name: ' CRUD 示例',
-      path: '/table',
-      component: './Table',
-    },
-    {
       name: '上传文件',
       path: '/upload',
       component: './Upload',

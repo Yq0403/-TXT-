@@ -1,13 +1,17 @@
+import React, { useState } from 'react';
+
 import { UploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, Upload } from 'antd';
 import type { UploadFile } from 'antd/es/upload/interface';
-import React, { useState } from 'react';
+import { RcFile } from 'antd/lib/upload';
+
+import styles from './index.module.less';
 
 const FileUpload: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<RcFile>();
 
   const handleCustomRequest = (options: any) => {
     const { onSuccess } = options;
@@ -29,7 +33,6 @@ const FileUpload: React.FC = () => {
       }
       return file;
     });
-
     setFileList(newFileList);
   };
 
@@ -37,27 +40,27 @@ const FileUpload: React.FC = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        const content = event.target.result;
-        const modifiedContent = content.replace(/^\s*[\r\n]/gm, '');
-        const modifiedBlob = new Blob([modifiedContent], {
-          type: 'text/plain',
-        });
-        const modifiedFile = new File([modifiedBlob], file.name, {
-          type: 'text/plain',
-        });
-        const url = URL.createObjectURL(modifiedFile);
-
-        // 创建一个下载链接
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = modifiedFile.name;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        const content = event.target!.result;
+        if (typeof content === 'string') {
+          const modifiedContent = content!.replace(/^\s*[\r\n]/gm, '');
+          const modifiedBlob = new Blob([modifiedContent], {
+            type: 'text/plain',
+          });
+          const modifiedFile = new File([modifiedBlob], file.name, {
+            type: 'text/plain',
+          });
+          const url = URL.createObjectURL(modifiedFile);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = modifiedFile.name;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } else {
+          console.error('File content is not a string.');
+        }
       };
-      console.log(111, file);
-
       reader.readAsText(file);
     }
   };
@@ -68,12 +71,18 @@ const FileUpload: React.FC = () => {
     multiple: true,
   };
   return (
-    <>
+    <div className={styles.wrapper}>
       <Upload {...props} fileList={fileList}>
-        <Button icon={<UploadOutlined />}>Upload</Button>
+        <Button icon={<UploadOutlined />}>上传</Button>
       </Upload>
-      <Button onClick={handleFileModification}>添加1并下载</Button>
-    </>
+      <Button
+        type="primary"
+        className={styles.downloadButton}
+        onClick={handleFileModification}
+      >
+        下载
+      </Button>
+    </div>
   );
 };
 
