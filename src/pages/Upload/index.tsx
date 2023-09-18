@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { UploadOutlined } from '@ant-design/icons';
+import { InboxOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, Upload } from 'antd';
 import type { UploadFile } from 'antd/es/upload/interface';
@@ -10,8 +10,9 @@ import styles from './index.module.less';
 
 const FileUpload: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-
   const [file, setFile] = useState<RcFile>();
+
+  const { Dragger } = Upload;
 
   const handleCustomRequest = (options: any) => {
     const { onSuccess } = options;
@@ -69,12 +70,17 @@ const FileUpload: React.FC = () => {
     customRequest: handleCustomRequest,
     onChange: handleChange,
     multiple: true,
+    directory: true,
   };
   return (
     <div className={styles.wrapper}>
-      <Upload {...props} fileList={fileList}>
-        <Button icon={<UploadOutlined />}>上传</Button>
-      </Upload>
+      <Dragger className={styles.dragger} {...props} fileList={fileList}>
+        <p className="ant-upload-drag-icon">
+          <InboxOutlined />
+        </p>
+        <p className="ant-upload-text">点击或者拖拽文件到此上传</p>
+        <p className="ant-upload-hint">支持单个或批量上传,仅支持.txt格式文件</p>
+      </Dragger>
       <Button
         type="primary"
         className={styles.downloadButton}
